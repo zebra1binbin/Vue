@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
-import { Form,FormItem,Input,Button,Message } from 'element-ui'
+import { Form,FormItem,Input,Button,Message,Container,Header,Aside,Main } from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
 import Home from '../views/Home.vue'
@@ -11,6 +11,10 @@ Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Input)
 Vue.use(Button)
+Vue.use(Container)
+Vue.use(Header)
+Vue.use(Aside)
+Vue.use(Main)
 Vue.prototype.$message= Message
 Vue.prototype.$http = axios
 //请求根路径
