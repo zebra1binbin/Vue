@@ -25,11 +25,11 @@
                                 <span>{{menuitem.name}}</span>
                             </template>
                             <!--二级菜单-->
-                            <el-menu-item :index="'/' + subitem.path" v-for="subitem in menuitem.goods" :key="subitem.goodsid" @click="saveNavState('/' + subitem.path)">
+                            <el-menu-item :index="'/' + subitem.path" v-for="subitem in menuitem.items" :key="subitem.goodsid" @click="saveNavState('/' + subitem.path)">
                                 <!--图标-->
                                 <i class="el-icon-menu"></i>
                                 <!--文本-->
-                                <span>{{subitem.goodsname}}</span>
+                                <span>{{subitem.name}}</span>
                             </el-menu-item>
                         </el-submenu>
                 </el-menu>
@@ -52,8 +52,11 @@ export default {
             //菜单数据
             menulist:[],
             iconsobj:{
-                '1':'el-icon-goods',
-                '2':'el-icon-warning-outline'
+                '1':'el-icon-user',
+                '2':'el-icon-warning-outline',
+                '3':'el-icon-goods',
+                '4':'el-icon-s-order',
+                '5':'el-icon-s-data'
             },
             //折叠标志
             isCollapse:false,
@@ -73,7 +76,7 @@ export default {
             this.$router.push('/login');
         },
         async getMenuList(){
-           const {data:res} = await this.$http.get('GetGoods')
+           const {data:res} = await this.$http.get('GetMenu')
            if(res.code !== 1){
                return this.$message.error(res.msg);
            }
