@@ -26,7 +26,12 @@ import {
   TableColumn,
   Switch,
   Tooltip,
-  Pagination } 
+  Pagination,
+  Dialog,
+  RadioGroup,
+  Radio,
+  Select,
+  Option } 
   from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
@@ -56,6 +61,11 @@ Vue.use(TableColumn)
 Vue.use(Switch)
 Vue.use(Tooltip)
 Vue.use(Pagination)
+Vue.use(Dialog)
+Vue.use(Radio)
+Vue.use(RadioGroup)
+Vue.use(Select)
+Vue.use(Option)
 Vue.prototype.$message= Message
 Vue.prototype.$http = axios
 //请求根路径
