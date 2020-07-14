@@ -73,7 +73,7 @@ export default {
                 const {data:res} = await this.$http.post('login',this.loginForm);
                 if(res.code != 1)
                 {
-                    return this.$message.error('账号或密码错误');
+                    return this.$message.error(res.msg);
                 }
                 else
                 {
