@@ -50,8 +50,8 @@
                         <el-tooltip effect="dark" content="删除用户" placement="top" :enterable="false">
                             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserbyID(scope.row.id)"></el-button>
                         </el-tooltip>
-                        <el-tooltip effect="dark" content="分配权限" placement="top" :enterable="false">
-                            <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+                        <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
+                            <el-button type="warning" icon="el-icon-setting" size="mini" @click="setRole()"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -164,6 +164,18 @@
             <span slot="footer" class="dialog-footer">
                 <el-button @click="editDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="editUserInfo">确 定</el-button>
+            </span>
+        </el-dialog>
+
+
+        <el-dialog
+        title="分配角色"
+        :visible.sync="setRoleDialogVisible"
+        width="50%">
+            <span>该功能API未启用</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="setRoleDialogVisible = false">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -290,7 +302,8 @@
                         { required: true, message: '请输入地址', trigger: 'blur' }
                     ]
                 },
-                validret:false
+                validret:false,
+                setRoleDialogVisible:false
            }
        },
        created(){
@@ -448,6 +461,9 @@
                 });
                 this.getUserList()
                 return this.$message.success('删除用户成功')
+            },
+            setRole(){
+                this.setRoleDialogVisible = true
             }
        }
    }

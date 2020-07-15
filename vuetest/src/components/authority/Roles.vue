@@ -63,8 +63,9 @@
                         <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
                             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserbyID(scope.row.id)">删除</el-button>
                         </el-tooltip>
+                        <!--提交树最底层的数组的id实现 树的默认选中节点(default-checked-keys)-->
                         <el-tooltip effect="dark" content="分配权限" placement="top" :enterable="false">
-                            <el-button type="warning" icon="el-icon-setting" size="mini">分配权限</el-button>
+                            <el-button type="warning" icon="el-icon-setting" size="mini" @click="showSetRightDialog(scope.row)">分配权限</el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -137,6 +138,21 @@
             </span>
         </el-dialog>
 
+        <el-dialog
+        title="分配权限"
+        :visible.sync="setRightDialogVisible"
+        width="50%"
+        @close="setRightDialogClosed"
+        >
+            <!--树形组件-->
+            <span>该功能API未启用</span>
+            <el-tree :data="rightlist" :props="treeProps" show-checkbox node-key="id" default-expand-all
+             :default-checked-keys="defKeys"></el-tree>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="setRightDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="editRight">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -181,7 +197,16 @@
                 }],
                 levelvalue:'',
                 editlevelvalue:'',
-                validret:false
+                validret:false,
+                setRightDialogVisible:false,
+                rightlist:[],
+                //树形控件的绑定对象
+                treeProps:{
+                    children: 'items',
+                    label: 'name'
+                },
+                //默认选中的id
+                defKeys:[]
             }
         },
         created(){
@@ -196,7 +221,7 @@
                 this.roleslist = res.data
             },
             async removeRightById(id){
-                await this.$confirm('此操作将删除该权限, 是否继续?', '提示', {
+                await this.$confirm('该功能API未启用', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -287,7 +312,7 @@
                 this.$message.success('修改角色成功')
             },
             async removeUserbyID(id){
-                console.log(id)
+                // console.log(id)
                 const confirmResult = await this.$confirm('此操作将删除该角色, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -310,6 +335,39 @@
                 });
                 this.getRolesList()
                 return this.$message.success('删除角色成功')
+            },
+            async showSetRightDialog(row){
+                const {data:res} = await this.$http.get('GetMenu')
+                if(res.code !== 1){
+                    return this.$message.error(res.msg);
+                }
+                this.rightlist = res.data
+                // console.log(row)
+                this.getLeafKeys(row,this.defKeys)
+                // console.log(this.rightlist)
+                this.setRightDialogVisible = true
+            },
+            //递归获取所有底层数组的id，并保存到defKeys
+            getLeafKeys(node,arr){
+                //底层节点的id长度为3
+                if(node.id >= 100 ){
+                    // console.log("push值：" + node.id)
+                    return arr.push(node.id)
+                }
+                // console.log(node.items)
+                if(node.items.length > 0){
+                    node.items.forEach(item=>
+                        this.getLeafKeys(item,arr)
+                    )
+                }
+               
+            },
+            setRightDialogClosed(){
+                this.defKeys.length = 0
+            },
+            editRight(){
+                this.setRightDialogVisible = false
+                return this.$message.success('删除权限成功')
             }
         }
     }

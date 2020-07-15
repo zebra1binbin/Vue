@@ -121,7 +121,17 @@ def login():
 @Server.route('/GetMenu',methods=['GET'])
 def GetMenu():
     yonghutempmenu = []
-    yonghuliebiao = Menu(11,'用户列表','Users',2,'')
+    yonghuliebiaopower = []
+    yonghuliebiaoadd = Menu(111,'用户列表增加','',2,'')
+    yonghuliebiaodelete = Menu(112,'用户列表删除','',2,'')
+    yonghuliebiaoedit = Menu(113,'用户列表修改','',2,'')
+    yonghuliebiaoselect = Menu(114,'用户列表查询','',2,'')
+    yonghuliebiaopower.append(yonghuliebiaoadd.get_res())
+    yonghuliebiaopower.append(yonghuliebiaodelete.get_res())
+    yonghuliebiaopower.append(yonghuliebiaoedit.get_res())
+    yonghuliebiaopower.append(yonghuliebiaoselect.get_res())
+    
+    yonghuliebiao = Menu(11,'用户列表','Users',2,yonghuliebiaopower)
     yonghutempmenu.append(yonghuliebiao.get_res())
     yonghuguanli = Menu(1,'用户管理','',1,yonghutempmenu)
     
