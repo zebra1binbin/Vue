@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
 import Welcome from '../components/Welcome.vue'
 import Users from '../components/user/Users.vue'
+import Rights from '../components/authority/Rights.vue'
+import Roles from '../components/authority/Roles.vue'
 import { 
   Form,
   FormItem,
@@ -31,7 +33,9 @@ import {
   RadioGroup,
   Radio,
   Select,
-  Option } 
+  Option,
+  MessageBox,
+  Tag } 
   from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
@@ -66,7 +70,9 @@ Vue.use(Radio)
 Vue.use(RadioGroup)
 Vue.use(Select)
 Vue.use(Option)
+Vue.use(Tag)
 Vue.prototype.$message= Message
+Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$http = axios
 //请求根路径
 axios.defaults.baseURL='http://127.0.0.1:9003/'
@@ -87,6 +93,7 @@ const routes = [
     name: 'Home',
     component: Home,
     redirect:'/welcome',
+    //routeview中的跳转组件
     children:[
       {
         path: '/welcome',
@@ -99,10 +106,14 @@ const routes = [
         component: Users
       },
       {
-        //临时的
-        path: '/authority',
-        name: 'welcome',
-        component: Welcome
+        path: '/rights',
+        name: 'rights',
+        component: Rights
+      },
+      {
+        path: '/roles',
+        name: 'Roles',
+        component: Roles
       }
     ]
   },
