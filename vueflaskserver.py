@@ -14,6 +14,8 @@ MenuList=[]
 roleslist = []
 bosspowerlist = []
 employeepowerlist = []
+categories = []
+
 Token = 'bearer asdasdasdasdasd1234561234512345132'
 
 #登陆账号
@@ -101,6 +103,23 @@ class Role():
         self.level = level
         self.description = description
 
+#种类
+class Category():
+    """docstring for Category"""
+    def __init__(self, id,name,useful,level,items):
+        self.id = id
+        self.name = name
+        self.useful = useful
+        self.level = level
+        self.items = items
+    def get_res(self):
+        return {"id":self.id,"name":self.name, "useful":self.useful, "level":self.level, "items":self.items}    
+    def get_id(self):
+        return self.id
+    def get_items(self):
+        return self.items
+
+
         
 @Server.route('/')
 def hello_world():
@@ -130,7 +149,6 @@ def GetMenu():
     yonghuliebiaopower.append(yonghuliebiaodelete.get_res())
     yonghuliebiaopower.append(yonghuliebiaoedit.get_res())
     yonghuliebiaopower.append(yonghuliebiaoselect.get_res())
-    
     yonghuliebiao = Menu(11,'用户列表','Users',2,yonghuliebiaopower)
     yonghutempmenu.append(yonghuliebiao.get_res())
     yonghuguanli = Menu(1,'用户管理','',1,yonghutempmenu)
@@ -141,8 +159,16 @@ def GetMenu():
     quanxianliebiao = Menu(22,'权限列表','Rights',2,'')
     qunxiantempmenu.append(quanxianliebiao.get_res())
     quanxianguanli = Menu(2,'权限管理','',1,qunxiantempmenu)
-    
-    shangpinguanli = Menu(3,'商品管理','',1,'')
+
+    shangpintempmenu = []
+    shangpinliebiao = Menu(31,'商品列表','Goods',2,'')
+    shangpintempmenu.append(shangpinliebiao.get_res())
+    fenleicanshu = Menu(32,'分类参数','Args',2,'')
+    shangpintempmenu.append(fenleicanshu.get_res())
+    shangpinfenlei = Menu(31,'商品分类','Categories',2,'')
+    shangpintempmenu.append(shangpinfenlei.get_res())
+
+    shangpinguanli = Menu(3,'商品管理','',1,shangpintempmenu)
     dingdanguanli = Menu(4,'订单管理','',1,'')
     shujutongji = Menu(5,'数据统计','',1,'')
     
@@ -155,6 +181,12 @@ def GetMenu():
     ret = ResultMsg(1,'scuuess',templist)
     return json.dumps(ret.get_res(),ensure_ascii=False)
     #return '{"data":[{"id":1,"name":"用户管理","goods":[{"goodsid":11,"goodsname":"用户列表","path":"users"}]},{"id":2,"name":"权限管理","goods":[{"goodsid":21,"goodsname":"权限","path":"authority"}]}],"code":1,"msg":""}'
+
+#获取商品分类
+@Server.route('/GetCategories',methods=['GET'])
+def GetCategories():
+    ret = ResultMsg(1,'scuuess',categories)
+    return json.dumps(ret.get_res(),ensure_ascii=False)
 
 #获取权限列表
 @Server.route('/GetRights',methods=['GET'])
@@ -356,11 +388,42 @@ def CreateRoles():
     employeepowerlist.append(quanxianguanli.get_res())
     roleslist.append(Role(1,'主管',1,'最高权限所有者',bosspowerlist))
     roleslist.append(Role(2,'员工',2,'一般权限所有者',employeepowerlist))
-    
+
+#创建商品分类列表
+def CreateCategories():
+    phonetemp = []
+    xiaomi = Category(111,'小米',True,3,'')
+    apple =  Category(112,'苹果',True,3,'')
+    phonetemp.append(xiaomi.get_res())
+    phonetemp.append(apple.get_res())
+    phone = Category(11,'手机',True,2,phonetemp)
+
+    cameratemp = []
+    sony = Category(121,'索尼',True,3,'')
+    cameratemp.append(sony.get_res())
+    camera= Category(12,'相机',True,2,cameratemp)
+    digitallist = []
+    digitallist.append(phone.get_res())
+    digitallist.append(camera.get_res())
+    digital = Category(1,'电子设备',True,1,digitallist)
+
+    bedtemp = []
+    ximengsi = Category(211,'席梦思',True,3,'')
+    bedtemp.append(ximengsi.get_res())
+    bed = Category(21,'床',True,2,bedtemp)
+    furniturelist = []
+    furniturelist.append(bed.get_res())
+    furniture = Category(2,'家具',True,1,furniturelist)
+    categories.append(digital.get_res())
+    categories.append(furniture.get_res())
+
+
+
 if __name__ == '__main__':
     CreateAccount()
     CreateUsers()
     CreateRoles()
+    CreateCategories()
     Server.run(host='127.0.0.1',port=9003)
 
     

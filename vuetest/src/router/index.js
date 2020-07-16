@@ -5,6 +5,7 @@ import Welcome from '../components/Welcome.vue'
 import Users from '../components/user/Users.vue'
 import Rights from '../components/authority/Rights.vue'
 import Roles from '../components/authority/Roles.vue'
+import Categories from '../components/goods/categories.vue'
 import { 
   Form,
   FormItem,
@@ -41,6 +42,7 @@ import {
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
 import Home from '../views/Home.vue'
+import TreeTable from 'vue-table-with-tree-grid'
 
 
 Vue.use(VueRouter)
@@ -76,6 +78,9 @@ Vue.use(Tree)
 Vue.prototype.$message= Message
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$http = axios
+//全局可用组件
+Vue.component('tree-table',TreeTable)
+
 //请求根路径
 axios.defaults.baseURL='http://127.0.0.1:9003/'
 //每个请求都会验证
@@ -116,6 +121,11 @@ const routes = [
         path: '/roles',
         name: 'Roles',
         component: Roles
+      },
+      {
+        path:'/categories',
+        name: 'Categories',
+        component: Categories
       }
     ]
   },
@@ -126,6 +136,7 @@ const routes = [
   }
 
 ]
+
 
 const router = new VueRouter({
   routes
