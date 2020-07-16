@@ -106,18 +106,18 @@ class Role():
 #种类
 class Category():
     """docstring for Category"""
-    def __init__(self, id,name,useful,level,items):
+    def __init__(self, id,name,useful,level,children):
         self.id = id
         self.name = name
         self.useful = useful
         self.level = level
-        self.items = items
+        self.children = children
     def get_res(self):
-        return {"id":self.id,"name":self.name, "useful":self.useful, "level":self.level, "items":self.items}    
+        return {"id":self.id,"name":self.name, "useful":self.useful, "level":self.level, "children":self.children}    
     def get_id(self):
         return self.id
     def get_items(self):
-        return self.items
+        return self.children
 
 
         
@@ -165,7 +165,7 @@ def GetMenu():
     shangpintempmenu.append(shangpinliebiao.get_res())
     fenleicanshu = Menu(32,'分类参数','Args',2,'')
     shangpintempmenu.append(fenleicanshu.get_res())
-    shangpinfenlei = Menu(31,'商品分类','Categories',2,'')
+    shangpinfenlei = Menu(33,'商品分类','Categories',2,'')
     shangpintempmenu.append(shangpinfenlei.get_res())
 
     shangpinguanli = Menu(3,'商品管理','',1,shangpintempmenu)
@@ -413,7 +413,7 @@ def CreateCategories():
     bed = Category(21,'床',True,2,bedtemp)
     furniturelist = []
     furniturelist.append(bed.get_res())
-    furniture = Category(2,'家具',True,1,furniturelist)
+    furniture = Category(2,'家具',False,1,furniturelist)
     categories.append(digital.get_res())
     categories.append(furniture.get_res())
 

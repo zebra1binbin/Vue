@@ -146,8 +146,13 @@
         >
             <!--树形组件-->
             <span>该功能API未启用</span>
-            <el-tree :data="rightlist" :props="treeProps" show-checkbox node-key="id" default-expand-all
-             :default-checked-keys="defKeys"></el-tree>
+            <el-tree 
+            :data="rightlist" 
+            :props="treeProps" 
+            show-checkbox node-key="id" 
+            default-expand-all
+            :default-checked-keys="defKeys">
+            </el-tree>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="setRightDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="editRight">确 定</el-button>

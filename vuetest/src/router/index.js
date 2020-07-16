@@ -37,7 +37,8 @@ import {
   Option,
   MessageBox,
   Tag,
-  Tree } 
+  Tree,
+  Cascader } 
   from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
@@ -75,6 +76,7 @@ Vue.use(Select)
 Vue.use(Option)
 Vue.use(Tag)
 Vue.use(Tree)
+Vue.use(Cascader)
 Vue.prototype.$message= Message
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$http = axios
