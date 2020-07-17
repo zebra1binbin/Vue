@@ -15,6 +15,7 @@ roleslist = []
 bosspowerlist = []
 employeepowerlist = []
 categories = []
+paramlist = []
 
 Token = 'bearer asdasdasdasdasd1234561234512345132'
 
@@ -102,7 +103,6 @@ class Role():
         self.name = name
         self.level = level
         self.description = description
-
 #种类
 class Category():
     """docstring for Category"""
@@ -118,7 +118,18 @@ class Category():
         return self.id
     def get_items(self):
         return self.children
-
+#参数
+class Param():
+    def __init__(self,id,name,items):
+       self.id = id 
+       self.name = name
+       self.items = items
+    def get_res(self):
+        return {"id":self.id,"name":self.name,"items":self.items}
+    def get_id(self):
+        return self.id
+    def get_items(self):
+        return self.items
 
         
 @Server.route('/')
@@ -167,10 +178,16 @@ def GetMenu():
     shangpintempmenu.append(fenleicanshu.get_res())
     shangpinfenlei = Menu(33,'商品分类','Categories',2,'')
     shangpintempmenu.append(shangpinfenlei.get_res())
-
     shangpinguanli = Menu(3,'商品管理','',1,shangpintempmenu)
-    dingdanguanli = Menu(4,'订单管理','',1,'')
-    shujutongji = Menu(5,'数据统计','',1,'')
+    diandantempmenu = []
+    dingdanliebiao = Menu(41,'订单列表','Orders',2,'')
+    diandantempmenu.append(dingdanliebiao.get_res())
+    dingdanguanli = Menu(4,'订单管理','',1,diandantempmenu)
+
+    shujutempmenu = []
+    shujuliebiao = Menu(51,'数据详情','Datas',2,'')
+    shujutempmenu.append(shujuliebiao.get_res())
+    shujutongji = Menu(5,'数据统计','',1,shujutempmenu)
     
     templist = []
     templist.append(yonghuguanli.get_res())
@@ -181,6 +198,14 @@ def GetMenu():
     ret = ResultMsg(1,'scuuess',templist)
     return json.dumps(ret.get_res(),ensure_ascii=False)
     #return '{"data":[{"id":1,"name":"用户管理","goods":[{"goodsid":11,"goodsname":"用户列表","path":"users"}]},{"id":2,"name":"权限管理","goods":[{"goodsid":21,"goodsname":"权限","path":"authority"}]}],"code":1,"msg":""}'
+
+#获取参数列表
+@Server.route('/GetParam',methods=['GET'])
+def GetParam():
+    #username = request.json.get("username")
+    #print()
+    ret = ResultMsg(1,'scuuess',paramlist)
+    return json.dumps(ret.get_res(),ensure_ascii=False)
 
 #获取商品分类
 @Server.route('/GetCategories',methods=['GET'])
@@ -417,6 +442,16 @@ def CreateCategories():
     categories.append(digital.get_res())
     categories.append(furniture.get_res())
 
+#创建参数列表
+def CreateParam():
+    colorlist = []
+    colorlist.append('红色')
+    colorlist.append('蓝色')
+    colorlist.append('绿色')
+    phone = Param(1,'iphone7',colorlist)
+    paramlist.append(phone.get_res())
+    
+
 
 
 if __name__ == '__main__':
@@ -424,6 +459,7 @@ if __name__ == '__main__':
     CreateUsers()
     CreateRoles()
     CreateCategories()
+    CreateParam()
     Server.run(host='127.0.0.1',port=9003)
 
     

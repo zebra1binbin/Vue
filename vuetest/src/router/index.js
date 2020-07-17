@@ -6,6 +6,8 @@ import Users from '../components/user/Users.vue'
 import Rights from '../components/authority/Rights.vue'
 import Roles from '../components/authority/Roles.vue'
 import Categories from '../components/goods/categories.vue'
+import Args from '../components/goods/args.vue'
+import Goods from '../components/goods/goods.vue'
 import { 
   Form,
   FormItem,
@@ -38,7 +40,10 @@ import {
   MessageBox,
   Tag,
   Tree,
-  Cascader } 
+  Cascader,
+  Alert,
+  TabPane,
+  Tabs } 
   from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
@@ -77,6 +82,9 @@ Vue.use(Option)
 Vue.use(Tag)
 Vue.use(Tree)
 Vue.use(Cascader)
+Vue.use(Alert)
+Vue.use(TabPane)
+Vue.use(Tabs)
 Vue.prototype.$message= Message
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$http = axios
@@ -128,6 +136,16 @@ const routes = [
         path:'/categories',
         name: 'Categories',
         component: Categories
+      },
+      {
+        path:'/args',
+        name:'args',
+        component:Args
+      },
+      {
+        path:'/goods',
+        name:'goods',
+        component:Goods
       }
     ]
   },

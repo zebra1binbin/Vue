@@ -131,7 +131,7 @@
                 },
                 addCateFormRules:{
                     name: [
-                        { required: true, message: '请输入分类名称', trigger: 'change' }
+                        { required: true, message: '请输入分类名称', trigger: 'blur' }
                     ]
                 },
                 parentCategoriesList:[],
@@ -214,14 +214,14 @@
                     this.$message({
                     type: 'success',
                     message: '删除成功!'
-                });
+                    });
                 }).catch(() => {
                     this.$message({
                     type: 'info',
                     message: '已取消删除'
-                });          
-            });
-        }
+                    });          
+                });
+            }
         }
     }
 
