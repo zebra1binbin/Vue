@@ -1,7 +1,16 @@
 from flask import Flask
 from flask import request
+from flask import make_response
 from flask_cors import CORS
+
+from werkzeug.utils import secure_filename
 import json
+import datetime
+import os
+import random
+import string
+import cv2
+
 
 Server = Flask(__name__)
 #解决跨域问题
@@ -16,6 +25,9 @@ bosspowerlist = []
 employeepowerlist = []
 categories = []
 paramlist = []
+goodslist = []
+orderlist = []
+progresslist = []
 
 Token = 'bearer asdasdasdasdasd1234561234512345132'
 
@@ -61,6 +73,37 @@ class User():
         self.option = option
     def get_name(self):
         return self.name
+
+#商品
+class Goods():
+    """docstring for ClassName"""
+    def __init__(self, id,name,price,weight,createtime):
+        self.id = id
+        self.name = name
+        self.price = price
+        self.weight = weight
+        self.createtime = createtime
+    def get_res(self):
+        return {"id":self.id,"name":self.name,"price":self.price,"weight":self.weight,"createtime":self.createtime}
+    def get_id(self):
+        return self.id
+    def set_Into(self,name,price,weight,createtime):
+        self.name = name
+        self.price = price
+        self.weight = weight
+        self.createtime = createtime
+    def get_name(self):
+        return self.name
+
+#返回的商品列表
+class ReultGoods():
+    def __init__(self,total,page,goodslist):
+        self.total = total
+        self.page = page
+        self.goodslist = goodslist
+    def  get_res(self):
+        return {"total":self.total, "page":self.page, "goodslist":self.goodslist}  
+
 #返回用户列表
 class UserList():
     def __init__(self,total,page,people):
@@ -120,17 +163,48 @@ class Category():
         return self.children
 #参数
 class Param():
-    def __init__(self,id,name,items):
+    def __init__(self,id,name,onlyvalue,items):
        self.id = id 
        self.name = name
+       self.onlyvalue = onlyvalue
        self.items = items
     def get_res(self):
-        return {"id":self.id,"name":self.name,"items":self.items}
+        return {"id":self.id,"name":self.name,"onlyvalue":self.onlyvalue,"items":self.items}
     def get_id(self):
         return self.id
     def get_items(self):
         return self.items
 
+#订单
+class Order(object):
+    """docstring for Order"""
+    def __init__(self, id,number,price,paied,send,ordertime):
+        self.id = id
+        self.number = number
+        self.price = price
+        self.paied = paied
+        self.send = send
+        self.ordertime = ordertime
+    def get_res(self):
+        return {"id":self.id,"number":self.number,"price":self.price,"paied":self.paied,"send":self.send,"ordertime":self.ordertime}   
+    def set_Into(self,number,price,paied,send,ordertime):
+        self.number = number
+        self.price = price
+        self.paied = paied
+        self.send = send
+        self.ordertime = ordertime
+
+#物流
+class  Progress(object):
+    """docstring for  Progress"""
+    def __init__(self, id,time,ftime,context,location):
+        self.id = id
+        self.time = time
+        self.ftime = ftime
+        self.context = context
+        self.location = location
+    def get_res(self):
+        return {"id":self.id,"time":self.time,"ftime":self.ftime,"context":self.context,"location":self.location}
         
 @Server.route('/')
 def hello_world():
@@ -304,7 +378,7 @@ def Users():
 #增加用户(name,sex,address,state,option)
 @Server.route('/AddUser',methods=['POST'])
 def AddUser():
-    id = len(userList)
+    id = len(userList) + 1
     name = request.json.get("name")
     sex = request.json.get("sex")
     email = request.json.get("email")
@@ -373,6 +447,119 @@ def UpdateAccount():
     ret = ResultMsg(1,'scuuess',tempjsonaccount)
     return json.dumps(ret.get_res())
 
+#获取商品列表(支持分页与按商品名称查询 参考Users)
+@Server.route('/GetGoods',methods=['GET'])
+def GetGoods():  
+    tempretlist= []
+    retlist= []
+    query = str(request.args.get('query'))
+    pagenum = int(request.args.get('pagenum'))
+    pagesize = int(request.args.get('pagesize'))
+    #开始的index
+    startnum = (pagenum - 1) * pagesize
+    endnum = pagenum * pagesize 
+    if query is not None or query != '': 
+        for querygoods in goodslist:
+            if str(querygoods.get_name()) == query:
+                tempretlist.append(querygoods.get_res())
+                retlist = ReultGoods(len(goodslist),pagenum,tempretlist)
+                ret = ResultMsg(1,'scuuess',retlist.get_res())
+                return json.dumps(ret.get_res(),ensure_ascii=False)
+    if endnum >= len(goodslist):
+        endnum = len(goodslist)
+    for indexnum in range(startnum,endnum):
+        retlist.append(goodslist[indexnum].get_res())
+    retlist = ReultGoods(len(goodslist),pagenum,retlist)
+    ret = ResultMsg(1,'scuuess',retlist.get_res())
+    return json.dumps(ret.get_res(),ensure_ascii=False)
+
+
+#增加商品
+@Server.route('/AddGoods',methods=['POST'])
+def  AddGoods():
+    id = len(goodslist) + 1
+    name = request.json.get("name")
+    price = int(request.json.get("price"))
+    weight = int(request.json.get("weight"))
+    goodslist.append((Goods(id,name,price,weight,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))))
+    ret = ResultMsg(1,'scuuess',goodslist[len(goodslist) - 1].get_res())
+    return json.dumps(ret.get_res(),ensure_ascii=False)
+#删除商品信息
+@Server.route('/DeleteGoods',methods=['POST'])
+def DeleteGoods():
+    id = request.json.get("id")
+    tempindex = 0
+    count = len(goodslist)
+    for index in range(tempindex,count):
+        if goodslist[index].get_id() == id:
+            tempindex = index
+    del goodslist[tempindex]
+    ret = ResultMsg(1,'scuuess','')
+    return json.dumps(ret.get_res(),ensure_ascii=False)
+
+#修改商品信息
+@Server.route('/UpdateGoods',methods=['POST'])
+def  UpdateGoods():
+    id = request.json.get("id")
+    name = request.json.get("name")
+    price = request.json.get("price")
+    weight = request.json.get("weight")
+    for index in range(0,len(goodslist)):
+        if goodslist[index].get_id() == id:
+            goodslist[index].set_Info(name,price,weight,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    ret = ResultMsg(1,'scuuess','')
+    return json.dumps(ret.get_res(),ensure_ascii=False) 
+
+#设置允许的文件格式
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'JPG', 'PNG', 'bmp'])
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+@Server.route("/Upload", methods=['POST'])
+def Upload():
+    authorization = request.headers.get("Authorization")
+    print(authorization)
+    f = request.files['file']
+    if not (f and allowed_file(f.filename)):
+        return jsonify({"error": 1001, "msg": "请检查上传的图片类型，仅限于png、PNG、jpg、JPG、bmp"})
+    user_input = request.form.get("name")
+    basepath = os.path.dirname(__file__) 
+    # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
+    upload_path = os.path.join(basepath, 'static/images', secure_filename(f.filename))  
+    print(upload_path)
+    f.save(upload_path)
+    # 使用Opencv转换一下图片格式和名称
+    #img = cv2.imread(upload_path)
+    #cv2.imwrite(os.path.join(basepath, 'static/images', 'test.jpg'), img)
+    ret = ResultMsg(1,'success',f.filename)
+    return  json.dumps(ret.get_res(),ensure_ascii=False) 
+
+#返回图像
+@Server.route('/GetImage',methods=['GET'])
+def GetImage():
+    import base64
+    id = request.args.get("id")
+    basepath = os.path.abspath(os.curdir)
+    imagepath = basepath + '\\static\\images\\' + id
+    print(imagepath)
+    image_data = open(imagepath, "rb").read()
+    response = make_response(image_data)
+    response.headers['Content-Type'] = 'image/png'
+    return response
+
+@Server.route('/GetOrders',methods=['GET'])
+def GetOrders():
+    templist = []
+    for order in orderlist:
+        templist.append(order.get_res())
+    ret = ResultMsg(1,'scuuess',templist)
+    return json.dumps(ret.get_res(),ensure_ascii=False)
+
+
+@Server.route('/GetProgress',methods=['GET'])
+def GetProgress():
+    ret = ResultMsg(1,'scuuess',progresslist)
+    return json.dumps(ret.get_res(),ensure_ascii=False)
+
 #创建登录账号
 def CreateAccount():
     accountList.append(Account('123','123'))
@@ -385,6 +572,7 @@ def CreateUsers():
     userList.append(User(3,'王五','男','789@qq.com','33333333333','山东省潍坊市坊子区',True,''))
     userList.append(User(4,'李签','女','111@qq.com','44444444444','山东省青岛市市南区',True,''))
     userList.append(User(5,'张三','男','123@qq.com','11111111111','山东省青岛市市北区',True,''))
+
 
 #创建角色列表
 def CreateRoles():
@@ -448,11 +636,44 @@ def CreateParam():
     colorlist.append('红色')
     colorlist.append('蓝色')
     colorlist.append('绿色')
-    phone = Param(1,'iphone7',colorlist)
-    paramlist.append(phone.get_res())
+    color = Param(1,'颜色','颜色的值',colorlist)
+    sizelist = []
+    sizelist.append('小')
+    sizelist.append('中')
+    sizelist.append('大')
+    size = Param(2,'大小','大小的值',sizelist)
+    paramlist.append(color.get_res())
+    paramlist.append(size.get_res())
     
+#创建商品列表
+def CreateGoods():
+    #日期格式 2020-07-18 00:00:00
+    goodslist.append(Goods(1,'苹果七',5600,100,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    goodslist.append(Goods(2,'苹果八',5700,100,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    goodslist.append(Goods(3,'苹果九',5800,100,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
+#创建订单
+def CreateOrders():
+    orderlist.append(Order(1,'sf4541231546645',40,True,True,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    orderlist.append(Order(2,'sf4541231584646',40,False,False,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    orderlist.append(Order(3,'sf4541231546495',40,False,False,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    orderlist.append(Order(4,'sf4541231546644',40,False,False,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    orderlist.append(Order(5,'sf4541231546641',40,True,True,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    orderlist.append(Order(6,'sf4541231546642',40,True,True,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
+def  CreateProgress():
+    p1 = Progress(1,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),'快件到达A','')
+    p2 = Progress(2,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),'快件到达B','')
+    p3 = Progress(3,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),'快件到达C','')
+    p4 = Progress(4,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),'快件到达D','')
+    p5 = Progress(5,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),'快件到达E','')
+    p6 = Progress(6,datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),'快件到达F','')
+    progresslist.append(p1.get_res())
+    progresslist.append(p2.get_res())
+    progresslist.append(p3.get_res())
+    progresslist.append(p4.get_res())
+    progresslist.append(p5.get_res())
+    progresslist.append(p6.get_res())
 
 if __name__ == '__main__':
     CreateAccount()
@@ -460,6 +681,10 @@ if __name__ == '__main__':
     CreateRoles()
     CreateCategories()
     CreateParam()
+    CreateGoods()
+    CreateOrders()
+    CreateProgress()
+    print (' * '+ os.path.abspath(os.curdir)) 
     Server.run(host='127.0.0.1',port=9003)
 
     

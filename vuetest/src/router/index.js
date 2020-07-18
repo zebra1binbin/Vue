@@ -8,6 +8,10 @@ import Roles from '../components/authority/Roles.vue'
 import Categories from '../components/goods/categories.vue'
 import Args from '../components/goods/args.vue'
 import Goods from '../components/goods/goods.vue'
+import AddGoods from '../components/goods/addgoods.vue'
+import Orders from '../components/order/orders.vue'
+import Datas from '../components/data/datas.vue'
+
 import { 
   Form,
   FormItem,
@@ -43,12 +47,24 @@ import {
   Cascader,
   Alert,
   TabPane,
-  Tabs } 
+  Tabs,
+  Steps,
+  Step,
+  Checkbox,
+  CheckboxGroup,
+  Upload,
+  Timeline,
+  TimelineItem } 
   from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
 import Home from '../views/Home.vue'
 import TreeTable from 'vue-table-with-tree-grid'
+
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css' // import styles
+import 'quill/dist/quill.snow.css' // for snow theme
+import 'quill/dist/quill.bubble.css' // for bubble theme
 
 
 Vue.use(VueRouter)
@@ -85,15 +101,36 @@ Vue.use(Cascader)
 Vue.use(Alert)
 Vue.use(TabPane)
 Vue.use(Tabs)
+Vue.use(Step)
+Vue.use(Steps)
+Vue.use(Checkbox)
+Vue.use(CheckboxGroup)
+Vue.use(Upload)
+Vue.use(Timeline)
+Vue.use(TimelineItem)
+Vue.use(VueQuillEditor)
 Vue.prototype.$message= Message
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$http = axios
 //全局可用组件
 Vue.component('tree-table',TreeTable)
 
+//全局过滤器 orihinVal需要处理的时间格式
+Vue.filter('dateFormat',function(orihinVal){
+  const dt = new Date(orihinVal)
+  const y = dt.getFullYear()
+  const m = (dt.getMonth() + 1 + '').padStart(2,'0')
+  const d = (dt.getDate() + '').padStart(2,'0')
+
+  const hh = (dt.getHours() + '').padStart(2,'0')
+  const mm = (dt.getMinutes() + '').padStart(2,'0')
+  const ss = (dt.getSeconds() + '').padStart(2,'0')
+  return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+})
+
 //请求根路径
 axios.defaults.baseURL='http://127.0.0.1:9003/'
-//每个请求都会验证
+//每个请求都会加一个验证
 axios.interceptors.request.use(config => {
   config.headers.Authorization = sessionStorage.getItem('token')
   //固定写法
@@ -146,6 +183,21 @@ const routes = [
         path:'/goods',
         name:'goods',
         component:Goods
+      },
+      {
+        path:'/goods/AddGoods',
+        name:'addgoods',
+        component:AddGoods
+      },
+      {
+        path:'/orders',
+        name:'orders',
+        component:Orders
+      },
+      {
+        path:'/datas',
+        name:'datas',
+        component:Datas
       }
     ]
   },

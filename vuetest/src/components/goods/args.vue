@@ -46,7 +46,7 @@
                                 <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
                             </template>
                         </el-table-column>
-                        <el-table-column type="index"></el-table-column>
+                        <el-table-column label="#" type="index"></el-table-column>
                         <el-table-column label="参数名称" prop="name"></el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
