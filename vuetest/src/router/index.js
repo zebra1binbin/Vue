@@ -127,9 +127,8 @@ Vue.filter('dateFormat',function(orihinVal){
   const ss = (dt.getSeconds() + '').padStart(2,'0')
   return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
 })
-
 //请求根路径
-axios.defaults.baseURL='http://127.0.0.1:9003/'
+axios.defaults.baseURL=window.baseDataUrl
 //每个请求都会加一个验证
 axios.interceptors.request.use(config => {
   config.headers.Authorization = sessionStorage.getItem('token')
@@ -203,7 +202,7 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'Login',
+    name: 'login',
     component: Login
   }
 
