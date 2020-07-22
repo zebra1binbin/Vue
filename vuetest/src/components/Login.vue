@@ -54,6 +54,15 @@ export default {
                 ]
           }
         }
+    },
+    created(){
+        document.onkeyup = (e) => {
+            //Enter ： keyCode= 13
+            // console.log(e.keyCode)
+            if (e.keyCode === 13) {
+               this.Login()
+            }
+        }
     }
     ,
     methods:{
